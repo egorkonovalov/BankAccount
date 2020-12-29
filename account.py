@@ -13,54 +13,64 @@ class Account:
         self._name = name
         self._balance = balance
 
-    def __str__(self):
-        return 'Account [' + str(self._number) + '] - ' + self._name
+    def deposit(self, amount):
+        if amount < 0:
+            raise AmountError(account = self, message = 'Cannot deposit negative amounts')
+        else:
+            self._balance += amount
+
+    def withdraw(self, amount):
+        if amount < 0:
+            raise AmountError(self, 'Cannot withdraw negative amounts')
+        else:
+            self._balance += amount
 
     @property
     def balance(self):
         """ The docstring for the balance property """
         return self._balance
 
+    def __str__(self):
+        return f'Account [{str(self._number)}] - {self._name}'
+
+
 class CurrentAccount(Account):
     def __init__(self, number, name, balance, overdraftLimit):
         super().__init__(number, name, balance)
         self.overdraftLimit = overdraftLimit
 
-    def __str__(self):
-        return super().__str__() + ', current account = ' + str(self._balance) + ', overdraft limit: ' + str(self.overdraftLimit)
-
     def withdraw(self, amount):
-        if amount > 0:
-            if amount < self.overdraftLimit:
-                self._balance -= amount
-            else:
-                raise BalanceError(amount)
+        if amount < 0:
+            raise AmountError(self, 'Cannot withdraw negative amounts')
+        elif self._balance - amount < self.overdraftLimit:
+            print('Withdrawal would exceed your overdraft limit')
+            raise BalanceError(self)
         else:
-            raise AmountError(amount)
+            self._balance -= amount
 
-    def deposit(self, amount):
-        if amount > 0:
-            self._balance += amount
-        else:
-            raise AmountError(amount)
+    def __str__(self):
+        return f'{super().__str__()}, current account = {str(self._balance)}, overdraft limit: {str(self.overdraftLimit)}'
+
 
 class AmountError(Exception):
     """ Valid amount must be positive """
 
-    def __init__(self, amount):
-        self.amount = amount
+    def __init__(self, account, message):
+        self.account = account
+        self.message = message
 
     def __str__(self):
-            return 'AmmountError (Cannot withdraw or deposit negative amounts ' + '(' + str(self.amount) + '))'
+        return f'AmountError ({self.message} on {str(self.account)})'
 
 class BalanceError(Exception):
     """ Balance can not be negative """
 
-    def __init__(self, amount):
+    def __init__(self, amount, message='BalanceError (The balance can not be below an overdraft limit)'):
         self.amount = amount
+        self.message = message
 
     def __str__(self):
-        return 'BalanceError (A balance can not be below an overdraft limit)'
+        return self.message
 
 class DepositAccount(Account):
 
@@ -69,7 +79,7 @@ class DepositAccount(Account):
         self.interestRate = interestRate
 
     def __str__(self):
-        return super().__str__() + ', savings account = ' + str(self._balance) + ', interest rate: ' + str(self.interestRate)
+        return f'{super().__str__()} savings account = {str(self._balance)} interest rate: {str(self.interestRate)}'
 
 class InvestmentAccount(Account):
 
@@ -78,7 +88,7 @@ class InvestmentAccount(Account):
         self.investmentType = investmentType
 
     def __str__(self):
-        return super().__str__() + ', investment account = ' + str(self._balance)
+        return f'{super().__str__()} investment account = {str(self._balance)}'
 
 acc1 = CurrentAccount('123', 'John', 10.05, -100.0)
 acc2 = DepositAccount('345', 'John', 23.55, 0.5)
