@@ -38,6 +38,19 @@ class InvalidAgeException(Exception):
     def __str__(self):
             return 'InvalidAgeException(' + str(self.value) + ')'
 
+class DivideByYWhenZeroException(Exception):
+    """ Sample Exception class """
+
+    def divide(x, y):
+        try:
+            result = x / y
+        except Exception as e:
+            raise DivideByYWhenZeroException from e
+
+    def main():
+        divide(6, 0)
+
+
 try:
     p = Person('Adam', 21)
     p.age = -1
