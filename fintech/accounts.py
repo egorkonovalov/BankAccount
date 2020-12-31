@@ -1,5 +1,29 @@
-""" This is a module containing types of accounts """
-class Account:
+from abc import ABCMeta
+
+# This is a module containing types of accounts
+
+class AmountError(Exception):
+    """ Valid amount must be positive """
+
+    def __init__(self, account, message):
+        self.account = account
+        self.message = message
+
+    def __str__(self):
+        return f'AmountError ({self.message} on {str(self.account)})'
+
+class BalanceError(Exception):
+    """ Balance can not be negative """
+
+    def __init__(self, amount, message='BalanceError (The balance can not be below an overdraft limit)'):
+        self.amount = amount
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+class Account(metaclass=ABCMeta):
+    """ A class that represents a type of account """
 
     instance_count = 0
 
@@ -69,22 +93,3 @@ class InvestmentAccount(Account):
     def __str__(self):
         return f'{super().__str__()} investment account = {str(self._balance)}'
 
-class AmountError(Exception):
-    """ Valid amount must be positive """
-
-    def __init__(self, account, message):
-        self.account = account
-        self.message = message
-
-    def __str__(self):
-        return f'AmountError ({self.message} on {str(self.account)})'
-
-class BalanceError(Exception):
-    """ Balance can not be negative """
-
-    def __init__(self, amount, message='BalanceError (The balance can not be below an overdraft limit)'):
-        self.amount = amount
-        self.message = message
-
-    def __str__(self):
-        return self.message
