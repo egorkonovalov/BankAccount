@@ -38,6 +38,15 @@ class Account(metaclass=ABCMeta):
         self._name = name
         self._balance = balance
 
+    def __enter__(self):
+        print('__enter__')
+        return self
+
+    # Args exception type, exception value and traceback
+    def __exit__(self, *args):
+        print('__exit__:', args)
+        return True
+
     def deposit(self, amount):
         if amount < 0:
             raise AmountError(account = self, message = 'Cannot deposit negative amounts')
