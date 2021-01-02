@@ -2,6 +2,7 @@ from abc import ABCMeta
 
 # This is a module containing types of accounts
 
+
 class AmountError(Exception):
     """ Valid amount must be positive """
 
@@ -12,6 +13,7 @@ class AmountError(Exception):
     def __str__(self):
         return f'AmountError ({self.message} on {str(self.account)})'
 
+
 class BalanceError(Exception):
     """ Balance can not be negative """
 
@@ -21,6 +23,7 @@ class BalanceError(Exception):
 
     def __str__(self):
         return self.message
+
 
 class Account(metaclass=ABCMeta):
     """ A class that represents a type of account """
@@ -38,6 +41,11 @@ class Account(metaclass=ABCMeta):
         self._name = name
         self._balance = balance
 
+    # Method called if attribute is unknown
+    def __getattr__(self, attribute):
+        print(f'__getattr__: unknown attribute accessed - {attribute}')
+        return -1
+
     def __enter__(self):
         print('__enter__')
         return self
@@ -49,7 +57,7 @@ class Account(metaclass=ABCMeta):
 
     def deposit(self, amount):
         if amount < 0:
-            raise AmountError(account = self, message = 'Cannot deposit negative amounts')
+            raise AmountError(account=self, message='Cannot deposit negative amounts')
         else:
             self._balance += amount
 
@@ -66,6 +74,7 @@ class Account(metaclass=ABCMeta):
 
     def __str__(self):
         return f'Account [{str(self._number)}] - {self._name}'
+
 
 class CurrentAccount(Account):
     def __init__(self, number, name, balance, overdraftLimit):
@@ -84,6 +93,7 @@ class CurrentAccount(Account):
     def __str__(self):
         return f'{super().__str__()}, current account = {str(self._balance)}, overdraft limit: {str(self.overdraftLimit)}'
 
+
 class DepositAccount(Account):
 
     def __init__(self, number, name, balance, interestRate):
@@ -93,6 +103,7 @@ class DepositAccount(Account):
     def __str__(self):
         return f'{super().__str__()} savings account = {str(self._balance)} interest rate: {str(self.interestRate)}'
 
+
 class InvestmentAccount(Account):
 
     def __init__(self, number, name, balance, investmentType):
@@ -101,4 +112,3 @@ class InvestmentAccount(Account):
 
     def __str__(self):
         return f'{super().__str__()} investment account = {str(self._balance)}'
-

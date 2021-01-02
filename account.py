@@ -1,6 +1,6 @@
 from fintech.accounts import *
 
-# acc1 = CurrentAccount('123', 'John', 10.05, -100.0)
+acc1 = CurrentAccount('123', 'John', 10.05, -100.0)
 # acc2 = DepositAccount('345', 'John', 23.55, 0.5)
 # acc3 = InvestmentAccount('567', 'Phoebe', 12.45, 'high risk')
 
@@ -27,7 +27,9 @@ from fintech.accounts import *
 #    print('Handling Exception')
 #    print(e)
 
-with CurrentAccount ('891', 'Adam', 5.0, -50.0) as acc:
-    acc.deposit(23.0)
-    acc.withdraw(12.33)
-    print(acc.balance)
+# with CurrentAccount('891', 'Adam', 5.0, -50.0) as acc:
+#     acc.deposit(23.0)
+#     acc.withdraw(12.33)
+#     print(acc.balance)
+
+print('acc1.branch:', acc1.branch)
