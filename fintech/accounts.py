@@ -1,6 +1,18 @@
 from abc import ABCMeta
+from timeit import default_timer
 
 # This is a module containing types of accounts
+
+
+#This decorator uses for logging how long a method takes to execute:
+def timer(func):
+    def inner(self, value):
+        print('calling ', func.__name__, 'on', self, 'with', value)
+        start = default_timer()
+        func(self, value)
+        end = default_timer()
+        print('returned from ', func.__name__, 'it took', end - start, 'seconds')
+    return inner
 
 
 class AmountError(Exception):
@@ -55,12 +67,14 @@ class Account(metaclass=ABCMeta):
         print('__exit__:', args)
         return True
 
+    @timer
     def deposit(self, amount):
         if amount < 0:
             raise AmountError(account=self, message='Cannot deposit negative amounts')
         else:
             self._balance += amount
 
+    @timer
     def withdraw(self, amount):
         if amount < 0:
             raise AmountError(self, 'Cannot withdraw negative amounts')
@@ -81,6 +95,7 @@ class CurrentAccount(Account):
         super().__init__(number, name, balance)
         self.overdraftLimit = overdraftLimit
 
+    @timer
     def withdraw(self, amount):
         if amount < 0:
             raise AmountError(self, 'Cannot withdraw negative amounts')
