@@ -4,7 +4,7 @@ from timeit import default_timer
 # This is a module containing types of accounts
 
 
-#This decorator uses for logging how long a method takes to execute:
+#This decorator is used for logging how long a method takes to execute:
 def timer(func):
     def inner(self, value):
         print('calling ', func.__name__, 'on', self, 'with', value)
