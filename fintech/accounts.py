@@ -37,10 +37,22 @@ class BalanceError(Exception):
         return self.message
 
 
+class Transaction:
+    """ A Class used to represent an individual Transaction """
+
+    def __init__(self, action, amount):
+        self.action = action
+        self.amount = amount
+
+    def __str__(self):
+        return 'Transaction[' + self.action + ': ' + str(self.amount) + ']'
+
+
 class Account(metaclass=ABCMeta):
     """ A class that represents a type of account """
 
     instance_count = 0
+
 
     @classmethod
     def increment_instance_count(cls):
@@ -52,6 +64,9 @@ class Account(metaclass=ABCMeta):
         self._number = number
         self._name = name
         self._balance = balance
+        # Note need to initialise the history list before you try to add a Transaction
+        self.history = []
+        self._add_deposit_transaction(balance)
 
     # Method called if attribute is unknown
     def __getattr__(self, attribute):
@@ -61,6 +76,25 @@ class Account(metaclass=ABCMeta):
     def __enter__(self):
         print('__enter__')
         return self
+
+    # Return the transaction hsitory as the iterable object for an Account
+    # and any subclass of Account
+    def __iter__(self):
+        return iter(self.history)
+
+    # Provide internal support for adding transactions
+    # Note by convention methods starting with an '_' shoudl not be called
+    # by clients of this class
+    def _add_transaction(self, transaction):
+        self.history.append(transaction)
+
+    # These are convenience methods to make it easier to
+    # record a deposit or withdrawal.
+    def _add_deposit_transaction(self, amount):
+        self._add_transaction(Transaction('deposit', amount))
+
+    def _add_withdraw_transaction(self, amount):
+        self._add_transaction(Transaction('withdraw', amount))
 
     # Args exception type, exception value and traceback
     def __exit__(self, *args):
@@ -73,13 +107,16 @@ class Account(metaclass=ABCMeta):
             raise AmountError(account=self, message='Cannot deposit negative amounts')
         else:
             self._balance += amount
+            self._add_deposit_transaction(amount)
 
     @timer
     def withdraw(self, amount):
         if amount < 0:
             raise AmountError(self, 'Cannot withdraw negative amounts')
         else:
-            self._balance += amount
+            self._balance -= amount
+            self._add_withdraw_transaction(amount)
+
 
     @property
     def balance(self):
@@ -104,6 +141,7 @@ class CurrentAccount(Account):
             raise BalanceError(self)
         else:
             self._balance -= amount
+            self._add_withdraw_transaction(amount)
 
     def __str__(self):
         return f'{super().__str__()}, current account = {str(self._balance)}, overdraft limit: {str(self.overdraftLimit)}'

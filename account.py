@@ -32,4 +32,7 @@ print('balance:', acc1.balance)
 #     acc.withdraw(12.33)
 #     print(acc.balance)
 
-print('acc1.branch:', acc1.branch)
+#print('acc1.branch:', acc1.branch)
+
+for transaction in acc1:
+    print(transaction)
