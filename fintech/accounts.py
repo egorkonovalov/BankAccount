@@ -4,15 +4,15 @@ from timeit import default_timer
 # This is a module containing types of accounts
 
 
-#This decorator is used for logging how long a method takes to execute:
-def timer(func):
-    def inner(self, value):
-        print('calling ', func.__name__, 'on', self, 'with', value)
-        start = default_timer()
-        func(self, value)
-        end = default_timer()
-        print('returned from ', func.__name__, 'it took', end - start, 'seconds')
-    return inner
+# # This decorator is used for logging how long a method takes to execute:
+# def timer(func):
+#     def inner(self, value):
+#         print('calling ', func.__name__, 'on', self, 'with', value)
+#         start = default_timer()
+#         func(self, value)
+#         end = default_timer()
+#         print('returned from ', func.__name__, 'it took', end - start, 'seconds')
+#     return inner
 
 
 class AmountError(Exception):
@@ -101,7 +101,7 @@ class Account(metaclass=ABCMeta):
         print('__exit__:', args)
         return True
 
-    @timer
+    # @timer
     def deposit(self, amount):
         if amount < 0:
             raise AmountError(account=self, message='Cannot deposit negative amounts')
@@ -109,7 +109,7 @@ class Account(metaclass=ABCMeta):
             self._balance += amount
             self._add_deposit_transaction(amount)
 
-    @timer
+    # @timer
     def withdraw(self, amount):
         if amount < 0:
             raise AmountError(self, 'Cannot withdraw negative amounts')
@@ -132,7 +132,7 @@ class CurrentAccount(Account):
         super().__init__(number, name, balance)
         self.overdraftLimit = overdraftLimit
 
-    @timer
+    # @timer
     def withdraw(self, amount):
         if amount < 0:
             raise AmountError(self, 'Cannot withdraw negative amounts')
